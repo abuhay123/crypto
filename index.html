@@ -2,88 +2,72 @@
 <html lang="he">
 <head>
   <meta charset="UTF-8">
+  <title>Crypto Abuhay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solaya Vault</title>
-  <link rel="icon" href="https://cryptologos.cc/logos/solana-sol-logo.png" type="image/png">
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ed25519-hd-key@1.1.5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bip39"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bs58"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      background: #0d0d0d;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Rubik', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
       overflow-x: hidden;
     }
-    .splash {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #000;
+    header, footer {
+      background: #161b22;
+      padding: 16px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .menu {
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      animation: fadeOut 2s forwards;
-      animation-delay: 2s;
+      gap: 20px;
+      padding: 16px;
+      background: #21262d;
     }
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
-    h1 {
-      font-size: 32px;
-      color: #00ffcc;
-      margin-top: 10px;
-    }
-    .nav {
-      display: flex;
-      justify-content: space-around;
-      background: #111;
-      padding: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 2px 5px #000;
-    }
-    .nav button {
-      background: transparent;
-      color: #0ff;
+    .menu button {
+      background: #238636;
+      color: white;
+      padding: 10px 20px;
       border: none;
-      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
       transition: 0.3s;
     }
-    .nav button:hover {
-      color: #fff;
-      text-shadow: 0 0 5px #0ff;
+    .menu button:hover {
+      background: #2ea043;
     }
-    section {
-      padding: 20px;
+    .section {
       display: none;
-      animation: fadeIn 1s;
+      padding: 20px;
+    }
+    .section.active {
+      display: block;
+      animation: fadeIn 0.6s ease-in-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     #aiWidgetButton {
       position: fixed;
       left: 20px;
       bottom: 20px;
-      background: #00ffcc;
-      color: black;
+      background: #238636;
+      color: white;
       border: none;
       border-radius: 50%;
       width: 60px;
       height: 60px;
       font-size: 28px;
       cursor: pointer;
-      z-index: 1000;
+      z-index: 10000;
+      box-shadow: 0 0 15px #00ffcc;
     }
     #aiWidgetPanel {
       position: fixed;
@@ -95,54 +79,70 @@
       padding: 15px;
       width: 250px;
       display: none;
-      z-index: 1000;
+      z-index: 10000;
     }
     #aiWidgetPanel input, #aiWidgetPanel button {
       width: 100%;
       margin-bottom: 10px;
-      padding: 8px;
-      border: none;
+      padding: 10px;
       border-radius: 6px;
+      border: none;
     }
     #aiWidgetPanel button {
-      background-color: #00ffcc;
+      background: #00ffcc;
       color: black;
       font-weight: bold;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    canvas {
+      background: #1a1a1a;
+      border-radius: 8px;
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
-<div class="splash">
-  <img src="https://cryptologos.cc/logos/solana-sol-logo.png" width="80">
-  <h1>Solaya Vault</h1>
-  <p>הכספת שלך לעולם ה־Web3</p>
-</div>
 
-<div class="nav">
-  <button onclick="showSection('home')">דף הבית</button>
+<header>
+  <h1>Crypto Abuhay</h1>
+  <p>אפליקציית הקריפטו המתקדמת ביותר בישראל</p>
+</header>
+
+<div class="menu">
   <button onclick="showSection('wallet')">ארנק</button>
+  <button onclick="showSection('market')">שוק</button>
   <button onclick="showSection('settings')">הגדרות</button>
 </div>
 
-<section id="home">
-  <h2>ברוך הבא</h2>
-  <p>כאן יופיע מידע שיווקי, חדשות, סטטיסטיקות שוק ועוד.</p>
-</section>
+<div id="wallet" class="section active">
+  <h2>יתרה</h2>
+  <p>כתובת הארנק: <span id="walletAddress">לא מחובר</span></p>
+  <p>יתרה ב-SOL: <span id="walletBalance">0.0000</span></p>
+  <button onclick="createWallet()">צור ארנק</button>
+  <button onclick="importWallet()">ייבוא עם מילים</button>
+  <input id="mnemonicInput" placeholder="12 מילים לשחזור" />
+</div>
 
-<section id="wallet">
-  <h2>ארנק Solana</h2>
-  <p>כאן תוכל לייבא או ליצור ארנק, לבדוק יתרה ולבצע שליחה.</p>
-</section>
+<div id="market" class="section">
+  <h2>גרף מחיר SOL</h2>
+  <canvas id="priceChart"></canvas>
+</div>
 
-<section id="settings">
+<div id="settings" class="section">
   <h2>הגדרות</h2>
-  <p>התחברות עם מייל וגוגל תתווסף כאן.</p>
-</section>
+  <p>אפשרות התחברות עם Google תתווסף בקרוב.</p>
+</div>
 
-<!-- עוזר AI פופאפ -->
+<footer>
+  <p>© 2025 Crypto Abuhay</p>
+</footer>
+
+<!-- AI Widget -->
 <button id="aiWidgetButton" onclick="toggleAIWidget()">🤖</button>
 <div id="aiWidgetPanel">
-  <input id="aiInput" placeholder="מה תרצה לדעת?"/>
+  <input id="aiInput" placeholder="מה תרצה לדעת?" />
   <button onclick="handleAsk()">שאל</button>
   <p id="aiResult"></p>
 </div>
@@ -153,29 +153,48 @@
     panel.style.display = panel.style.display === "none" ? "block" : "none";
   }
   function showSection(id) {
-    document.querySelectorAll("section").forEach(s => s.style.display = "none");
-    document.getElementById(id).style.display = "block";
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   }
-  window.onload = () => {
-    showSection("home");
+  async function createWallet() {
+    const mnemonic = bip39.generateMnemonic();
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const key = seed.slice(0, 32);
+    const pair = solanaWeb3.Keypair.fromSeed(key);
+    document.getElementById("walletAddress").innerText = pair.publicKey.toBase58();
+    document.getElementById("walletBalance").innerText = "... טוען";
+    const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+    const balance = await conn.getBalance(pair.publicKey);
+    document.getElementById("walletBalance").innerText = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
+  }
+  async function importWallet() {
+    const mnemonic = document.getElementById("mnemonicInput").value.trim();
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const key = seed.slice(0, 32);
+    const pair = solanaWeb3.Keypair.fromSeed(key);
+    document.getElementById("walletAddress").innerText = pair.publicKey.toBase58();
+    const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+    const balance = await conn.getBalance(pair.publicKey);
+    document.getElementById("walletBalance").innerText = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
   }
   async function handleAsk() {
-    const input = document.getElementById("aiInput").value;
+    const question = document.getElementById("aiInput").value.trim();
     document.getElementById("aiResult").innerText = "טוען...";
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-proj-xxxxxxxxxxxxxxxx"
+        "Authorization": "Bearer sk-REPLACE-WITH-YOUR-KEY"
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: input }]
+        messages: [{ role: "user", content: question }]
       })
     });
     const data = await res.json();
-    document.getElementById("aiResult").innerText = data.choices?.[0]?.message?.content || "אין תשובה";
+    document.getElementById("aiResult").innerText = data.choices?.[0]?.message?.content || "לא התקבלה תשובה";
   }
 </script>
+
 </body>
 </html>
