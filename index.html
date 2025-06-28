@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solaya Vault</title>
+  <link rel="icon" href="https://cryptologos.cc/logos/solana-sol-logo.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ed25519-hd-key@1.1.5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+    .splash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 2s forwards;
+      animation-delay: 2s;
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    h1 {
+      font-size: 32px;
+      color: #00ffcc;
+      margin-top: 10px;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-around;
+      background: #111;
+      padding: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 5px #000;
+    }
+    .nav button {
+      background: transparent;
+      color: #0ff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .nav button:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #0ff;
+    }
+    section {
+      padding: 20px;
+      display: none;
+      animation: fadeIn 1s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #aiWidgetButton {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      background: #00ffcc;
+      color: black;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #aiWidgetPanel {
+      position: fixed;
+      left: 20px;
+      bottom: 90px;
+      background: #111;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      width: 250px;
+      display: none;
+      z-index: 1000;
+    }
+    #aiWidgetPanel input, #aiWidgetPanel button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+    }
+    #aiWidgetPanel button {
+      background-color: #00ffcc;
+      color: black;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="splash">
+  <img src="https://cryptologos.cc/logos/solana-sol-logo.png" width="80">
+  <h1>Solaya Vault</h1>
+  <p>הכספת שלך לעולם ה־Web3</p>
+</div>
+
+<div class="nav">
+  <button onclick="showSection('home')">דף הבית</button>
+  <button onclick="showSection('wallet')">ארנק</button>
+  <button onclick="showSection('settings')">הגדרות</button>
+</div>
+
+<section id="home">
+  <h2>ברוך הבא</h2>
+  <p>כאן יופיע מידע שיווקי, חדשות, סטטיסטיקות שוק ועוד.</p>
+</section>
+
+<section id="wallet">
+  <h2>ארנק Solana</h2>
+  <p>כאן תוכל לייבא או ליצור ארנק, לבדוק יתרה ולבצע שליחה.</p>
+</section>
+
+<section id="settings">
+  <h2>הגדרות</h2>
+  <p>התחברות עם מייל וגוגל תתווסף כאן.</p>
+</section>
+
+<!-- עוזר AI פופאפ -->
+<button id="aiWidgetButton" onclick="toggleAIWidget()">🤖</button>
+<div id="aiWidgetPanel">
+  <input id="aiInput" placeholder="מה תרצה לדעת?"/>
+  <button onclick="handleAsk()">שאל</button>
+  <p id="aiResult"></p>
+</div>
+
+<script>
+  function toggleAIWidget() {
+    const panel = document.getElementById("aiWidgetPanel");
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+  }
+  function showSection(id) {
+    document.querySelectorAll("section").forEach(s => s.style.display = "none");
+    document.getElementById(id).style.display = "block";
+  }
+  window.onload = () => {
+    showSection("home");
+  }
+  async function handleAsk() {
+    const input = document.getElementById("aiInput").value;
+    document.getElementById("aiResult").innerText = "טוען...";
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer sk-proj-xxxxxxxxxxxxxxxx"
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: input }]
+      })
+    });
+    const data = await res.json();
+    document.getElementById("aiResult").innerText = data.choices?.[0]?.message?.content || "אין תשובה";
+  }
+</script>
+</body>
+</html>
